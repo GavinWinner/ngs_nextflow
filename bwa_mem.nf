@@ -50,9 +50,13 @@ process bwa_mem {
 """
 mkdir -p ${params.outdir_tmp}
 
-bwa mem -M -t ${task.cpus} $params.genome_fasta $fastq1 $fastq2 | \
+bwa mem -M -t ${task.cpus} \
+$params.genome_fasta $fastq1 $fastq2 | \
 sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
-sambamba sort -t ${task.cpus} -m 2GB --tmpdir=${params.outdir_tmp} -o ${params.bam_prefix}.dupemk.bam /dev/stdin
+sambamba sort -t ${task.cpus} -m 2GB \
+--tmpdir=${params.outdir_tmp} \
+-o ${params.bam_prefix}.dupemk.bam /dev/stdin
+## index
 sambamba index ${params.bam_prefix}.dupemk.bam
 
 """
