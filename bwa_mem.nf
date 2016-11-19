@@ -4,7 +4,7 @@
  * Defines some parameters in order to specify the reference genomes
  * read pairs, threads and output by using the command line options
  */
-params.threads = "30"
+params.threads = 30
 params.genome_fasta = "/home/ubuntu/scratch/genomes/bwa_index/hs37d5-viral-prok.fa"
 params.fastq_r1 = "/home/ubuntu/scratch/fastq/NIST7035_TAAGGCGA_L001_R1_001.fastq.gz"
 params.fastq_r2 = "/home/ubuntu/scratch/fastq/NIST7035_TAAGGCGA_L001_R2_001.fastq.gz"
@@ -14,7 +14,7 @@ params.bam_prefix = "NA12878_NIST7035_TAAGGCGA"
 
 
 /*
- * ref genome and fastq R1 and R2 files
+ * fastq R1 and R2 files
  */
 
 fastq1 = file(params.fastq_r1)
@@ -39,8 +39,11 @@ log.info "threads            : ${params.threads}"
 
 process bwa_mem {
   echo true
+
   tag { params.bam_prefix }
+
   cpus params.threads
+
   publishDir params.outdir, mode: 'copy'
 
   input:
@@ -65,12 +68,6 @@ sambamba sort -t ${task.cpus} -m 8GB \
 sambamba index ${params.bam_prefix}.dupemk.bam
 """
 }
-
-/*
- * using nf synatx and setting genome = params.genome_fasta
- * breaks nf. using file genome in input
- * nf can't find the index files and breaks
- */
 
 workflow.onComplete {
 	println ( workflow.success ? "Done!" : "Oops .. something went wrong" )
