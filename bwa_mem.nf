@@ -48,22 +48,26 @@ process bwa_mem {
     file fastq2
 
 """
-mkdir -p ${params.outdir_tmp}
-
-bwa mem -M -t ${task.cpus} \
-$params.genome_fasta $fastq1 $fastq2 | \
+## bwa mem -M
+bwa mem -M \
+-t ${task.cpus} \
+$params.genome_fasta \
+$fastq1 $fastq2 | \
+samblaster --addMateTags --excludeDups \
+-d ${params.bam_prefix}.disc.sam \
+-s ${params.bam_prefix}.split.sam \
+-u ${params.bam_prefix}.unmapped.fastq | \
 sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
-sambamba sort -t ${task.cpus} -m 2GB \
+sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
 -o ${params.bam_prefix}.dupemk.bam /dev/stdin
 ## index
 sambamba index ${params.bam_prefix}.dupemk.bam
-
 """
 }
 
 /*
- * using nf synatx and setting genome = params.genome_fasya
+ * using nf synatx and setting genome = params.genome_fasta
  * breaks nf. using file genome in input
  * nf can't find the index files and breaks
  */
