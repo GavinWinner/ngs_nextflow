@@ -6,11 +6,11 @@
  */
 params.threads = 28
 params.genome_fasta = "/home/ubuntu/scratch/genomes/bwa_index/hs37d5-viral-prok.fa"
-params.fastq_r1 = "/home/ubuntu/scratch/fastq/NIST7035_TAAGGCGA_L001_R1_001.fastq.gz"
-params.fastq_r2 = "/home/ubuntu/scratch/fastq/NIST7035_TAAGGCGA_L001_R2_001.fastq.gz"
+params.fastq_r1 = "./test/chr20.R1.fq.gz"
+params.fastq_r2 = "./test/chr20.R2.fq.gz"
 params.outdir = "/home/ubuntu/scratch/alignment_files"
 params.outdir_tmp = "/home/ubuntu/scratch/alignment_files/tmp"
-params.bam_prefix = "NA12878_NIST7035_TAAGGCGA"
+params.bam_prefix = "NA12878_NIST7035_TAAGGCGA_Chr20"
 
 
 /*
