@@ -4,7 +4,7 @@
  * Defines some parameters in order to specify the reference genomes
  * read pairs, threads and output by using the command line options
  */
-params.threads = 30
+params.threads = 28
 params.genome_fasta = "/home/ubuntu/scratch/genomes/bwa_index/hs37d5-viral-prok.fa"
 params.fastq_r1 = "/home/ubuntu/scratch/fastq/NIST7035_TAAGGCGA_L001_R1_001.fastq.gz"
 params.fastq_r2 = "/home/ubuntu/scratch/fastq/NIST7035_TAAGGCGA_L001_R2_001.fastq.gz"
@@ -34,38 +34,34 @@ log.info "temp_dir           : ${params.outdir_tmp}"
 log.info "threads            : ${params.threads}"
 
 /*
- * bwa alignment
+ * Step 1.0 : bwa alignment
  */
 
 process bwa_mem {
   echo true
-
   tag { params.bam_prefix }
-
   cpus params.threads
 
-  publishDir params.outdir, mode: 'copy'
 
   input:
     file fastq1
     file fastq2
 
 """
-## bwa mem -M
 bwa mem -M \
 -t ${task.cpus} \
 $params.genome_fasta \
 $fastq1 $fastq2 | \
 samblaster --addMateTags --excludeDups \
--d ${params.bam_prefix}.disc.sam \
--s ${params.bam_prefix}.split.sam \
--u ${params.bam_prefix}.unmapped.fastq | \
+-d ${params.outdir}/${params.bam_prefix}.disc.sam \
+-s ${params.outdir}/${params.bam_prefix}.split.sam \
+-u ${params.outdir}/${params.bam_prefix}.unmapped.fastq | \
 sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
 sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
--o ${params.bam_prefix}.dupemk.bam /dev/stdin
-## index
-sambamba index ${params.bam_prefix}.dupemk.bam
+-o ${params.outdir}/${params.bam_prefix}.dupemk.bam /dev/stdin
+
+sambamba index ${params.outdir}/${params.bam_prefix}.dupemk.bam
 """
 }
 
