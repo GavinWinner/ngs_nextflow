@@ -10,7 +10,7 @@ params.fastq_r1 = "./test/chr20.R1.fq.gz"
 params.fastq_r2 = "./test/chr20.R2.fq.gz"
 params.outdir = "/home/ubuntu/scratch/alignment_files"
 params.outdir_tmp = "/home/ubuntu/scratch/alignment_files/tmp"
-params.bam_prefix = "NA12878_NIST7035_TAAGGCGA_Chr20"
+params.bam_prefix = "NA12878_NIST7035_TAAGGCGA_Chr20_test_01"
 
 
 /*
