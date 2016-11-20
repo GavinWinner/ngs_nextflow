@@ -47,6 +47,9 @@ process bwa_mem {
     file fastq1
     file fastq2
 
+  output:
+    file 'params.outdir/params.bam_prefix.dupemk.bam' into dupemk_bam
+
 """
 bwa mem -M \
 -t ${task.cpus} \

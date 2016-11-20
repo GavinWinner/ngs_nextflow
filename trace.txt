@@ -1,2 +1,2 @@
 task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	rss	vmem	rchar	wchar
-1	b5/f5c777	9793	bwa_mem (NA12878_NIST7035_TAAGGCGA_Chr20_test_01)	COMPLETED	0	2016-11-20 11:49:39.389	2m 55s	2m 53s	358.7%	18 GB	30 GB	17.9 GB	9.6 MB
+1	64/1d59c9	13074	bwa_mem (NA12878_NIST7035_TAAGGCGA_Chr20_test_01)	FAILED	0	2016-11-20 11:59:31.701	1m 43s	1m 39s	694.6%	18.1 GB	30 GB	17.9 GB	37.2 MB
