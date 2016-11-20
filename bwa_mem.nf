@@ -59,13 +59,13 @@ bwa mem -M \
 $params.genome_fasta \
 $fastq1 $fastq2 | \
 samblaster --addMateTags --excludeDups \
--d ${params.outdir}/${params.bam_prefix}.disc.sam \
--s ${params.outdir}/${params.bam_prefix}.split.sam \
--u ${params.outdir}/${params.bam_prefix}.unmapped.fastq | \
+-d ${params.bam_prefix}.disc.sam \
+-s ${params.bam_prefix}.split.sam \
+-u ${params.bam_prefix}.unmapped.fastq | \
 sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
 sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
--o ${params.outdir}/${params.bam_prefix}.dupemk.bam /dev/stdin
+-o ${params.bam_prefix}.dupemk.bam /dev/stdin
 """
 }
 
@@ -86,7 +86,7 @@ process index_dupemk_bam{
     file '*.bai' into bai_file
 
 """
-sambamba index $bam
+sambamba index --nthreads=${task.cpus} $bam
 """
 }
 
