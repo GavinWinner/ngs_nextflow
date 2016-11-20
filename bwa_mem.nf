@@ -35,6 +35,7 @@ log.info "threads            : ${params.threads}"
 
 /*
  * Step 1.0 : bwa alignment: samblaster and sambamba
+ * https://github.com/nextflow-io/faq
  */
 
 process bwa_mem {
@@ -48,7 +49,7 @@ process bwa_mem {
     file fastq2
 
   output:
-    file '*.dupemk.bam' into dupemk_bam
+    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_1
     file '*.disc.sam' into disc_sam
     file '*.split.sam' into split_sam
     file '*.unmapped.fastq' into unmapped_fastq
@@ -80,13 +81,34 @@ process index_dupemk_bam{
   publishDir params.outdir,  mode: 'copy', overwrite: false
 
   input:
-  file bam from dupemk_bam
+    file bam from dupemk_bam
 
   output:
     file '*.bai' into bai_file
 
 """
 sambamba index --nthreads=${task.cpus} $bam
+"""
+}
+
+/*
+ * Step 2.0 Call Variants : freebayes
+ */
+
+process call_variants_freebayes{
+  echo true
+  tag { params.bam_prefix }
+  cpus params.threads
+  publishDir params.outdir,  mode: 'copy', overwrite: false
+
+  input:
+    file dupemk_bam_1
+
+    output:
+      file '*.raw.vcf' into raw_vcf_file
+
+"""
+freebayes -f $params.genome_fasta --min-coverage 10 $dupemk_bam_1  | vcffilter -f "QUAL > 20" > ${params.bam_prefix}.raw.vcf
 """
 }
 
