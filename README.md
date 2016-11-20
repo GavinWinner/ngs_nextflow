@@ -10,4 +10,8 @@ Playing around with nextflow for basic NGS alignment and variant calling pipelin
 - register gatk with bioconda  
 - tool list coming soon  
 
+## test fatsq
+
+chr20 from `NIST7035_H7AP8ADXX_TAAGGCGA NA1287`
+
 ## Running a test pipelines
