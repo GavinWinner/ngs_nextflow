@@ -34,21 +34,24 @@ log.info "temp_dir           : ${params.outdir_tmp}"
 log.info "threads            : ${params.threads}"
 
 /*
- * Step 1.0 : bwa alignment
+ * Step 1.0 : bwa alignment: samblaster and sambamba
  */
 
 process bwa_mem {
   echo true
   tag { params.bam_prefix }
   cpus params.threads
-
+  publishDir params.outdir,  mode: 'copy', overwrite: false
 
   input:
     file fastq1
     file fastq2
 
   output:
-    file 'params.outdir/params.bam_prefix.dupemk.bam' into dupemk_bam
+    file '*.dupemk.bam' into dupemk_bam
+    file '*.disc.sam' into disc_sam
+    file '*.split.sam' into split_sam
+    file '*.unmapped.fastq' into unmapped_fastq
 
 """
 bwa mem -M \
@@ -63,8 +66,27 @@ sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
 sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
 -o ${params.outdir}/${params.bam_prefix}.dupemk.bam /dev/stdin
+"""
+}
 
-sambamba index ${params.outdir}/${params.bam_prefix}.dupemk.bam
+/*
+ * Step 1.1 index bwa aligned bam file
+ */
+
+process index_dupemk_bam{
+  echo true
+  tag { params.bam_prefix }
+  cpus params.threads
+  publishDir params.outdir,  mode: 'copy', overwrite: false
+
+  input:
+  file bam from dupemk_bam
+
+  output:
+    file '*.bai' into bai_file
+
+"""
+sambamba index $bam
 """
 }
 
