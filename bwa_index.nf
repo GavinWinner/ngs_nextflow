@@ -67,30 +67,6 @@ samtools faidx $fasta
 """
 }
 
-/*
- * Step 3.0 : Generate the sequence dictionary
- * https://github.com/nextflow-io/faq
- */
-
-
-process picard_sequence_dictionary {
-  echo true
-  tag { fasta }
-  publishDir params.outdir,  mode: 'copy', overwrite: false
-
-input:
-  file fasta
-
-output:
-  file '*.dict' into sequence_dict
-
-"""
-picard CreateSequenceDictionary \
-REFERENCE=$fasta \
-OUTPUT=$fasta.dict
-"""
-}
-
 workflow.onComplete {
 	println ( workflow.success ? "Done!" : "Oops .. something went wrong" )
 }
