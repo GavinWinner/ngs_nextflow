@@ -11,7 +11,7 @@ To do....set up and installation and dockerfiles
 - using bioconda packages  
 - register gatk with bioconda  
 - full tool list coming soon
-- bwa, samtools, samblaster, picard, freebayes  
+- `bwa`, `samtools`, `samblaster`, `picard`, `freebayes`  
 
 ## Test fatsq
 
@@ -21,8 +21,8 @@ To do....how i got the data
 
 ## NF Test Pipelines
 
-- bwa_index.nf  
-- bwa_mem.nf  
+- [bwa_index.nf](https://github.com/snewhouse/ngs_nextflow/blob/master/bwa_index.nf)  
+- [bwa_mem.nf](https://github.com/snewhouse/ngs_nextflow/blob/master/bwa_mem.nf)  
 
 ## Running a test pipelines
 
@@ -48,3 +48,9 @@ threads            : 28
 [d0/58f8ad] Submitted process > call_variants_freebayes (NA12878_NIST7035_TAAGGCGA_Chr20_test_01)
 Done!
 ```
+
+****
+
+## Future...
+
+- GATK best practices pipeline
