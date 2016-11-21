@@ -4,15 +4,25 @@ Playing around with nextflow for basic NGS alignment and variant calling pipelin
 
 ## Requirements
 
+To do....set up and installation and dockerfiles
+
 - Linux, 64bit
 - Anaconda  
 - using bioconda packages  
 - register gatk with bioconda  
-- tool list coming soon  
+- full tool list coming soon
+- bwa, samtools, samblaster, picard, freebayes  
 
-## test fatsq
+## Test fatsq
 
 chr20 from `NIST7035_H7AP8ADXX_TAAGGCGA NA1287`
+
+To do....how i got the data
+
+## NF Test Pipelines
+
+- bwa_index.nf  
+- bwa_mem.nf  
 
 ## Running a test pipelines
 
