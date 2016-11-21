@@ -2,16 +2,22 @@
 
 Playing around with nextflow for basic NGS alignment and variant calling pipelines.
 
+*This is work in progress*
+
 ## Requirements
 
 To do....set up and installation and dockerfiles
 
-- Linux, 64bit
-- Anaconda  
-- using bioconda packages  
-- register gatk with bioconda  
-- full tool list coming soon
-- `bwa`, `samtools`, `samblaster`, `picard`, `freebayes`  
+- OS: Linux, 64bit
+- Lots of RAM, Lots of CPU's
+- Anaconda : using bioconda packages  
+- Users must register gatk with bioconda  
+- Full tool list coming soon
+- Tools: `nextflow`, `bwa`, `samtools`, `samblaster`, `picard`, `freebayes`  
+
+## Installing
+
+To do....
 
 ## Test fatsq
 
@@ -50,6 +56,9 @@ Done!
 ```
 
 ****
+
+## NF NGS Piplines
+to do...
 
 ## Future...
 
