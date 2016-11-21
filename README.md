@@ -21,7 +21,7 @@ To do....how i got the data
 
 ## NF Test Pipelines
 
-- [bwa_index.nf](https://github.com/snewhouse/ngs_nextflow/blob/master/bwa_index.nf)  
+- [bwa_index.nf](https://github.com/snewhouse/ngs_nextflow/blob/master/bwa_index.nf). NOT TESTED  
 - [bwa_mem.nf](https://github.com/snewhouse/ngs_nextflow/blob/master/bwa_mem.nf)  
 
 ## Running a test pipelines
