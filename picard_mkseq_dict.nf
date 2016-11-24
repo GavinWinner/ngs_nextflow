@@ -29,7 +29,7 @@ input:
   file fasta
 
 output:
-  file "*.dict" into sequence_dict
+  file "${fasta}.dict" into sequence_dict
 
 shell:
 """
