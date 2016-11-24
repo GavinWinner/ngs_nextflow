@@ -29,11 +29,12 @@ input:
   file fasta
 
 output:
-  file '*.dict' into sequence_dict
+  file "*.dict" into sequence_dict
 
+shell:
 """
 picard CreateSequenceDictionary \
 REFERENCE=$fasta \
-OUTPUT=$fasta.dict
+OUTPUT="${fasta}.dict"
 """
 }
