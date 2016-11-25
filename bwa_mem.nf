@@ -71,6 +71,7 @@ process bwa_mem {
     file '*.disc.sam' into disc_sam
     file '*.split.sam' into split_sam
     file '*.unmapped.fastq' into unmapped_fastq
+    file '*.err' into error_file
 
 """
 bwa mem \
@@ -86,7 +87,7 @@ samblaster --addMateTags --excludeDups \
 sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
 sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
--o ${params.bam_prefix}.dupemk.bam /dev/stdin
+-o ${params.bam_prefix}.dupemk.bam /dev/stdin 2>${params.bam_prefix}.bwa_mem.err
 """
 }
 
