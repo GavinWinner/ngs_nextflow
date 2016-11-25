@@ -5,12 +5,12 @@
  * read pairs, threads and output by using the command line options
  */
 params.threads = 28
-params.genome_fasta = "/home/ubuntu/scratch/genomes/bwa_index/hs37d5-viral-prok.fa"
+params.genome_fasta = "./test/chr20.fa"
 params.fastq_r1 = "./test/chr20.R1.fq.gz"
 params.fastq_r2 = "./test/chr20.R2.fq.gz"
-params.outdir = "/home/ubuntu/scratch/alignment_files"
+params.outdir = "./test"
 params.outdir_tmp = "/home/ubuntu/scratch/alignment_files/tmp"
-params.bam_prefix = "NA12878_NIST7035_TAAGGCGA_Chr20_test_01"
+params.bam_prefix = "chr20"
 
 
 /*
