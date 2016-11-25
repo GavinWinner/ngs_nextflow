@@ -1,0 +1,8 @@
+nextflow
+picard
+samtools
+sambamba
+samblaster
+bwa
+freebayes
+
