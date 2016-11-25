@@ -97,6 +97,27 @@ sambamba index --nthreads=${task.cpus} $bam
 """
 }
 
+/*
+ * Step 2.0 Call Variants : freebayes
+ */
+
+process call_variants_freebayes{
+  echo true
+  tag { params.bam_prefix }
+  cpus params.threads
+  publishDir params.outdir,  mode: 'copy', overwrite: false
+
+  input:
+    file dupemk_bam_1
+
+    output:
+      file '*.raw.vcf' into raw_vcf_file
+
+"""
+freebayes -f $params.genome_fasta --min-coverage 10 $dupemk_bam_1  | vcffilter -f "QUAL > 20" > ${params.bam_prefix}.raw.vcf
+"""
+}
+
 workflow.onComplete {
 	println ( workflow.success ? "Done!" : "Oops .. something went wrong" )
 }
