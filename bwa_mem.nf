@@ -4,8 +4,14 @@
  * Defines some parameters in order to specify the reference genomes
  * read pairs, threads and output by using the command line options
  */
+
+//number of threads
 params.threads = 28
+
+//genome version
 params.genome_fasta = "${HOME}/Dropbox/ngs_nextflow/test/chr20.fa"
+
+//sample information
 params.fastq_r1 = "${HOME}/Dropbox/ngs_nextflow/test/chr20.R1.fq.gz"
 params.fastq_r2 = "${HOME}/Dropbox/ngs_nextflow/test/chr20.R2.fq.gz"
 params.bam_prefix = "chr20"
@@ -14,6 +20,8 @@ params.platform="ILLUMINA"
 params.platform_unit="PU1"
 params.library="LB1"
 params.rundate="2016"
+
+//output and tempory directories
 params.outdir = "${HOME}/Dropbox/ngs_nextflow/test"
 params.outdir_tmp = "/home/ubuntu/scratch/alignment_files/tmp"
 
@@ -27,11 +35,17 @@ fastq2 = file(params.fastq_r2)
 /*
  * log.info
  */
-log.info "BWA MEM PIPELINE : NGSeasy-ish>"
-log.info "================================="
+log.info "===================================================================="
+log.info "BWA MEM PIPELINE : Map, mark duplicates, sort and index             "
+log.info "===================================================================="
 log.info "genome             : ${params.genome_fasta}"
 log.info "R1                 : ${params.fastq_r1}"
 log.info "R2                 : ${params.fastq_r2}"
+log.info "RG:SM              : ${params.sample_name}"
+log.info "RG:PL              : ${params.platform}"
+log.info "RG:PU              : ${params.platform_unit}"
+log.info "RG:LB              : ${params.library}"
+log.info "RG:DT              : ${params.rundate}"
 log.info "bam_prefix         : ${params.bam_prefix}"
 log.info "outdir             : ${params.outdir}"
 log.info "temp_dir           : ${params.outdir_tmp}"
