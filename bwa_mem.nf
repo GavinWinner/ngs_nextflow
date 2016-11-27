@@ -67,7 +67,7 @@ process bwa_mem {
     file fastq2
 
   output:
-    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_1
+    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_to_index, dupemk_bam_for_flagstat
     file '*.disc.sam' into disc_sam
     file '*.split.sam' into split_sam
     file '*.unmapped.fastq' into unmapped_fastq
@@ -95,20 +95,42 @@ sambamba sort -t ${task.cpus} -m 8GB \
  * Step 1.1 index bwa aligned bam file
  */
 
-process index_dupemk_bam{
+process index_dupemk_bam {
   echo true
   tag { params.bam_prefix }
   cpus params.threads
   publishDir params.outdir,  mode: 'copy', overwrite: false
 
   input:
-    file bam from dupemk_bam
+    file bam_to_index from dupemk_bam_to_index
 
   output:
     file '*.bai' into bai_file
 
 """
-sambamba index --nthreads=${task.cpus} $bam
+sambamba index --nthreads=${task.cpus} $bam_to_index
+"""
+}
+
+/*
+ * Step 1.2 flagstats
+ */
+
+process sambamba_flagstat {
+  echo true
+  tag { params.bam_prefix }
+  cpus params.threads
+  publishDir params.outdir,  mode: 'copy', overwrite: false
+
+  input:
+    file bam_to_flagstat from dupemk_bam_for_flagstat
+    file bai from bai_file
+    
+  output:
+    file '*.flagstat.txt' into flagstat_file
+
+"""
+sambamba flagstat -t ${task.cpus} $bam_to_flagstat > ${params.bam_prefix}.dupemk.bam.flagstat.txt
 """
 }
 
