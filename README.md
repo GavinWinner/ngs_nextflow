@@ -10,7 +10,7 @@ To do....set up and installation and dockerfiles
 
 - OS: Linux, 64bit
 - Lots of RAM, Lots of CPU's
-- Anaconda : using bioconda packages  
+- Anaconda3 4.2.0 : using bioconda packages  
 - Users must register gatk with bioconda  
 - Full tool list coming soon
 - Tools: `nextflow`, `bwa`, `samtools`, `samblaster`, `picard`, `freebayes`  
