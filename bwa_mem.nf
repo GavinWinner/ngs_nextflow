@@ -6,14 +6,21 @@ if (params.help) {
   log.info "NEXTFLOW BWA PIPELINE (Version 0.1)                                 "
   log.info "===================================================================="
   log.info " "
-  log.info "Usage: "
+  log.info "USAGE: "
   log.info " "
   log.info "nextflow run bwa_mem.nf \\"
   log.info " --fastq_r1 chr20.R1.fq.gz \\"
   log.info " --fastq_r2 chr20.R2.fq.gz \\"
   log.info " --genome_fasta chr20.fa \\"
-  log.info " --bam_prefix chr20 \\"
   log.info " --threads 28 \\"
+  log.info " --bam_prefix chr20 \\"
+  log.info " --sample_name TEST \\"
+  log.info " --platform ILLUMINA \\"
+  log.info " --platform_unit PU1 \\"
+  log.info " --library LB1 \\"
+  log.info " --rundate 28 \\"
+  log.info " "
+  log.info "HELP: nextflow run bwa_mem.nf --help"
   log.info " "
   log.info "===================================================================="
   log.info "Required Arguments:"
@@ -258,8 +265,19 @@ if(params.gatk_full){
     shell:
     """
     set -e
-    java -Xmx${params.java_mem}G -jar ${params.GenomeAnalysisTK} -T RealignerTargetCreator -nt ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned.bam -known ${params.gold_std_indels} -known ${params.phase1_indels} -o ${bam_prefix}_target_intervals.list
-    java -Xmx${params.java_mem}G -jar ${params.GenomeAnalysisTK} -T IndelRealigner -R ${params.genome_fasta} -I ${bam_prefix}_realigned.bam -targetIntervals ${bam_prefix}_target_intervals.list -known ${params.gold_std_indels} -known ${params.phase1_indels} -o ${bam_prefix}_realigned2.bam
+    java -Xmx${params.java_mem}G -Djava.io.tmpdir=${params.outdir_tmp} -jar ${params.GenomeAnalysisTK} \
+    -T RealignerTargetCreator -nt ${params.used_cpu} -R ${params.genome_fasta} \
+    -I ${bam_prefix}.dupemk.bam \
+    -known ${params.gold_std_indels} \
+    -known ${params.phase1_indels} \
+    -o ${bam_prefix}_target_intervals.list
+    java -Xmx${params.java_mem}G -Djava.io.tmpdir=${params.outdir_tmp} -jar ${params.GenomeAnalysisTK} \
+    -T IndelRealigner -R ${params.genome_fasta} \
+    -I ${bam_prefix}_realigned.bam \
+    -targetIntervals ${bam_prefix}_target_intervals.list \
+    -known ${params.gold_std_indels} \
+    -known ${params.phase1_indels} \
+    -o ${bam_prefix}_realigned2.bam
     """
 }
 
