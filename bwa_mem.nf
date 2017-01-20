@@ -1,6 +1,10 @@
 #!/usr/bin/env nextflow
 
+// set some default params 
 params.help=""
+params.stats=""
+params.gatk_full=""
+params.gatk=""
 
 if (params.help) {
   log.info " "
@@ -199,7 +203,7 @@ sambamba index --nthreads=${task.cpus} $bam_to_index
 
 //ALIGNMENT STATS
 
-if(pramams.stats){
+if(params.stats){
 
 	/*
 	* Step 1.2 flagstats
