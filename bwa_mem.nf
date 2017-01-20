@@ -97,11 +97,11 @@ if (params.help) {
 params.threads = 28
 
 //genome version
-params.genome_fasta = "./test/chr20.fa"
+params.genome_fasta = "/mnt/data2/ngs_projects/raw_fastq/ngs_nextflow/test/chr20.fa"
 
 //sample information
-params.fastq_r1 = "./test/chr20.R1.fq.gz"
-params.fastq_r2 = "./test/chr20.R2.fq.gz"
+params.fastq_r1 = "/mnt/data2/ngs_projects/raw_fastq/ngs_nextflow/test/chr20.R1.fq.gz"
+params.fastq_r2 = "/mnt/data2/ngs_projects/raw_fastq/ngs_nextflow/test/chr20.R2.fq.gz"
 params.bam_prefix = "chr20"
 params.rg_id = "${params.bam_prefix}"
 params.sample_name="NA12878"
