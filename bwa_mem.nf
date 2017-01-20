@@ -104,8 +104,7 @@ params.sample_name="NA12878"
 params.platform="ILLUMINA"
 params.platform_unit="PU1"
 params.library="LB1"
-DATE="$(date)"
-params.rundate="${DATE}"
+params.rundate=""
 
 //bwa args
 params.bwa_args=""
