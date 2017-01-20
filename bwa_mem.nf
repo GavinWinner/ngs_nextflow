@@ -18,7 +18,10 @@ if (params.help) {
   log.info " --platform ILLUMINA \\"
   log.info " --platform_unit PU1 \\"
   log.info " --library LB1 \\"
-  log.info " --rundate 28 \\"
+  log.info " --rundate 2017 \\"
+  log.info " --outdir ./test \\"
+  log.info " --outdir_tmp ./test/tmp \\"
+  log.info " -with-trace -with-timeline"
   log.info " "
   log.info "HELP: nextflow run bwa_mem.nf --help"
   log.info " "
@@ -88,24 +91,26 @@ if (params.help) {
 params.threads = 28
 
 //genome version
-params.genome_fasta = "${HOME}/Dropbox/ngs_nextflow/test/chr20.fa"
+params.genome_fasta = "./test/chr20.fa"
 
 //sample information
-params.fastq_r1 = "${HOME}/Dropbox/ngs_nextflow/test/chr20.R1.fq.gz"
-params.fastq_r2 = "${HOME}/Dropbox/ngs_nextflow/test/chr20.R2.fq.gz"
+params.fastq_r1 = "./test/chr20.R1.fq.gz"
+params.fastq_r2 = "./test/chr20.R2.fq.gz"
 params.bam_prefix = "chr20"
+params.rg_id = ${params.bam_prefix}
 params.sample_name="NA12878"
 params.platform="ILLUMINA"
 params.platform_unit="PU1"
 params.library="LB1"
-params.rundate="2016"
+DATE=$(date)
+params.rundate="${DATE}"
 
 //bwa args
 params.bwa_args=""
 
 //output and tempory directories
-params.outdir = "${HOME}/Dropbox/ngs_nextflow/test"
-params.outdir_tmp = "/home/ubuntu/scratch/alignment_files/tmp"
+params.outdir = "/mnt/data2/ngs_projects/raw_fastq/alignments"
+params.outdir_tmp = "/mnt/data2/ngs_projects/raw_fastq/alignments/tmp"
 
 /*
  * fastq R1 and R2 files
