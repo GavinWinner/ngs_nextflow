@@ -154,7 +154,7 @@ process bwa_mem {
     file fastq2
 
   output:
-    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_to_index, dupemk_bam_for_flagstat, dupemk_bam_for_idxstats
+    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_to_index, dupemk_bam_for_flagstat, dupemk_bam_for_idxstats, dupemk_bam_gatk, dupemk_bam_gatk_full
     file '*.err' into error_file
 
 """
@@ -233,7 +233,7 @@ if(pramams.stats){
 	  publishDir params.outdir,  mode: 'copy', overwrite: false
 
 	  input:
-	    file bam_to_idxstatsfrom dupemk_bam_for_idxstats
+	    file bam_to_idxstats from dupemk_bam_for_idxstats
 	    file bai from bai_file
 	    
 	  output:
@@ -273,16 +273,17 @@ if(params.gatk_full){
     java -Xmx${params.java_mem}G -Djava.io.tmpdir=${params.outdir_tmp} -jar ${params.GenomeAnalysisTK} \
     -T RealignerTargetCreator -nt ${params.used_cpu} -R ${params.genome_fasta} \
     -I ${bam_prefix}.dupemk.bam \
-    -known ${params.gold_std_indels} \
+    -known ${params.goldstd_indels} \
     -known ${params.phase1_indels} \
-    -o ${bam_prefix}_target_intervals.list
+    -o ${bam_prefix}_target_intervals.list;
+
     java -Xmx${params.java_mem}G -Djava.io.tmpdir=${params.outdir_tmp} -jar ${params.GenomeAnalysisTK} \
     -T IndelRealigner -R ${params.genome_fasta} \
     -I ${bam_prefix}_realigned.bam \
     -targetIntervals ${bam_prefix}_target_intervals.list \
-    -known ${params.gold_std_indels} \
+    -known ${params.goldstd_indels} \
     -known ${params.phase1_indels} \
-    -o ${bam_prefix}_realigned2.bam
+    -o ${bam_prefix}_realigned2.bam;
     """
 }
 
@@ -307,8 +308,8 @@ process gatk_recalibration {
     shell:
     """
     set -e
-    java -jar ${params.GenomeAnalysisTK} -T BaseRecalibrator -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -knownSites ${params.dbsnp} -knownSites ${params.gold_std_indels} -knownSites ${params.phase1_indels} -o ${bam_prefix}_recal.table
-    java -jar ${params.GenomeAnalysisTK} -T BaseRecalibrator -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -knownSites ${params.dbsnp} -knownSites ${params.gold_std_indels} -knownSites ${params.phase1_indels} -BQSR ${bam_prefix}_recal.table -o ${bam_prefix}_post_recal.table
+    java -jar ${params.GenomeAnalysisTK} -T BaseRecalibrator -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -knownSites ${params.dbsnp} -knownSites ${params.goldstd_indels} -knownSites ${params.phase1_indels} -o ${bam_prefix}_recal.table
+    java -jar ${params.GenomeAnalysisTK} -T BaseRecalibrator -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -knownSites ${params.dbsnp} -knownSites ${params.goldstd_indels} -knownSites ${params.phase1_indels} -BQSR ${bam_prefix}_recal.table -o ${bam_prefix}_post_recal.table
     java -jar ${params.GenomeAnalysisTK} -T AnalyzeCovariates -R ${params.genome_fasta} -before ${bam_prefix}_recal.table -after ${bam_prefix}_post_recal.table -plots ${bam_prefix}_recalibration_plots.pdf
     java -jar ${params.GenomeAnalysisTK} -T PrintReads -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -BQSR ${bam_prefix}_recal.table -o ${bam_prefix}_realigned_recal.bam
     """
