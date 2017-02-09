@@ -1,7 +1,10 @@
 #!/usr/bin/env nextflow
 
-// set some default params
+// set some default params 
 params.help=""
+params.stats=""
+params.gatk_full=""
+params.gatk=""
 
 if (params.help) {
   log.info " "
@@ -58,6 +61,27 @@ if (params.help) {
   log.info "Optional BWA Alignment Arguments:"
   log.info " "
   log.info "          --bwa_args        STRING     Optional bwa arguments eg: \"-I 250,50\""
+  log.info " "
+  log.info "GATK Best practices"
+  log.info " "
+  log.info "          --gatk            Optional    If Specifed, run GATK best practices"
+  log.info "                                        Base Quality Score Recalibration*"
+  log.info "          --gatk_full       Optional    If Specifed, run GATK best practices"
+  log.info "                                        indel realignment and base quality score recalibration"
+  log.info "          --java_mem        INTEGER     Java memory passed to gatk"
+  log.info "          --dbsnp           STRING      Full path and name of gatk resource "
+  log.info "          --phase1_indels   STRING      Full path and name of gatk resource "
+  log.info "          --goldstd_indels  STRING      Full path and name of gatk resource "
+  log.info " "
+  log.info " *NOTE: Indel realignment is no longer necessary for variant discovery if you plan"
+  log.info " to use a variant caller that performs a haplotype assembly step, such as"
+  log.info " HaplotypeCaller, Freebayes or MuTect2. However it is still required when using "
+  log.info " legacy callers such as UnifiedGenotyper or the original MuTect"
+  log.info " "
+  log.info "STATS AND MULTIQC REPORTS:"
+  log.info " "
+  log.info "          --stats           Optional   If Specifed, run basic alignment statistics:flagstat, idexstat"
+  log.info "          --multiqc         Optional   If Specifed, run multiqc on output directory"
   log.info " "
   log.info "===================================================================="
   exit 1
@@ -135,30 +159,51 @@ process bwa_mem {
     file fastq2
 
   output:
-    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_to_index, dupemk_bam_for_flagstat, dupemk_bam_for_idxstats
+    file '*.dupemk.bam' into dupemk_bam, dupemk_bam_to_index, dupemk_bam_for_flagstat, dupemk_bam_for_idxstats, dupemk_bam_gatk, dupemk_bam_gatk_full
     file '*.err' into error_file
-    file '*.bai' into bam_index
 
 """
 bwa mem \
 -M \
 ${params.bwa_args} \
+-R '@RG\tID:${params.bam_prefix}\tSM:${params.sample_name}\tPU:${params.platform_unit}\tPL:${params.platform}\tLB:${params.library}\tDT:${params.rundate}' \
 -t ${task.cpus} \
--R '@RG\tID:${params.rg_id}\tSM:${params.sample_name}\tPU:${params.platform_unit}\tPL:${params.platform}\tLB:${params.library}\tDT:${params.rundate}' \
+-R '@RG\tID:${params.bam_prefix}\tSM:${params.sample_name}\tPU:${params.platform_unit}\tPL:${params.platform}\tLB:${params.library}\tDT:${params.rundate}' \
 $params.genome_fasta \
 $fastq1 $fastq2 | \
-samblaster \
---addMateTags \
---excludeDups | \
+samblaster --addMateTags --excludeDups | \
 sambamba view -t ${task.cpus} -S -f bam /dev/stdin | \
 sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
--o ${params.bam_prefix}.dupemk.bam /dev/stdin 2>${params.bam_prefix}.bwa_mem.err &&
-sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
+-o ${params.bam_prefix}.dupemk.bam /dev/stdin 2>${params.bam_prefix}.bwa_mem.err
+"""
+}
+
+
+/*
+ * Step 1.1 index bwa aligned bam file
+ */
+
+process index_dupemk_bam {
+  echo true
+  tag { params.bam_prefix }
+  cpus params.threads
+  publishDir params.outdir,  mode: 'copy', overwrite: false
+
+  input:
+    file bam_to_index from dupemk_bam_to_index
+
+  output:
+    file '*.bai' into bai_file
+
+"""
+sambamba index --nthreads=${task.cpus} $bam_to_index
 """
 }
 
 //ALIGNMENT STATS
+
+if(params.stats){
 
 	/*
 	* Step 1.2 flagstats
@@ -173,7 +218,7 @@ sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
 	  input:
 	    file bam_to_flagstat from dupemk_bam_for_flagstat
 	    file bai from bai_file
-
+	    
 	  output:
 	    file '*.flagstat.txt' into flagstat_file
 
@@ -195,7 +240,7 @@ sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
 	  input:
 	    file bam_to_idxstats from dupemk_bam_for_idxstats
 	    file bai from bai_file
-
+	    
 	  output:
 	    file '*.idxstat.txt' into idxstat_file
 
@@ -203,8 +248,79 @@ sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
 	samtools idxstats $bam_to_idxstat > ${params.bam_prefix}.dupemk.bam.idxstat.txt
 	"""
 	}
+exit 1
+}
 
+// gatk_full
 
+if(params.gatk_full){
+  process gatk_indel_realignment {
+
+    cpus params.reserved_cpu
+
+    echo true
+    tag { params.bam_prefix }
+    cpus params.threads
+    publishDir params.outdir,  mode: 'copy', overwrite: false
+
+    input:
+    set val(bam_prefix), file("${bam_prefix}_realigned.bam"), file("${bam_prefix}_realigned.bam.bai")  from outputs_bam_realignment
+    file params.genome_fasta
+    file params.genome_fasta_fai
+    file params.genome_fasta_dict
+
+    output:
+    set val(bam_prefix), file("${bam_prefix}_realigned2.bam"), file("${bam_prefix}_realigned2.bai")  into outputs_indel_realignment
+
+    shell:
+    """
+    set -e
+    java -Xmx${params.java_mem}G -Djava.io.tmpdir=${params.outdir_tmp} -jar ${params.GenomeAnalysisTK} \
+    -T RealignerTargetCreator -nt ${params.used_cpu} -R ${params.genome_fasta} \
+    -I ${bam_prefix}.dupemk.bam \
+    -known ${params.goldstd_indels} \
+    -known ${params.phase1_indels} \
+    -o ${bam_prefix}_target_intervals.list;
+
+    java -Xmx${params.java_mem}G -Djava.io.tmpdir=${params.outdir_tmp} -jar ${params.GenomeAnalysisTK} \
+    -T IndelRealigner -R ${params.genome_fasta} \
+    -I ${bam_prefix}_realigned.bam \
+    -targetIntervals ${bam_prefix}_target_intervals.list \
+    -known ${params.goldstd_indels} \
+    -known ${params.phase1_indels} \
+    -o ${bam_prefix}_realigned2.bam;
+    """
+}
+
+process gatk_recalibration {
+
+    cpus params.reserved_cpu
+
+    echo true
+    tag { params.bam_prefix }
+    cpus params.threads
+    publishDir params.outdir,  mode: 'copy', overwrite: false
+
+    input:
+    set val(bam_prefix), file("${bam_prefix}_realigned2.bam"), file("${bam_prefix}_realigned2.bai")  from outputs_indel_realignment
+    file params.genome_fasta
+    file params.genome_fasta_fai
+    file params.genome_fasta_dict
+
+    output:
+    set val(bam_prefix), file("${bam_prefix}_realigned_recal.bam"), file("${bam_prefix}_realigned_recal.bai") into outputs_recalibration
+
+    shell:
+    """
+    set -e
+    java -jar ${params.GenomeAnalysisTK} -T BaseRecalibrator -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -knownSites ${params.dbsnp} -knownSites ${params.goldstd_indels} -knownSites ${params.phase1_indels} -o ${bam_prefix}_recal.table
+    java -jar ${params.GenomeAnalysisTK} -T BaseRecalibrator -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -knownSites ${params.dbsnp} -knownSites ${params.goldstd_indels} -knownSites ${params.phase1_indels} -BQSR ${bam_prefix}_recal.table -o ${bam_prefix}_post_recal.table
+    java -jar ${params.GenomeAnalysisTK} -T AnalyzeCovariates -R ${params.genome_fasta} -before ${bam_prefix}_recal.table -after ${bam_prefix}_post_recal.table -plots ${bam_prefix}_recalibration_plots.pdf
+    java -jar ${params.GenomeAnalysisTK} -T PrintReads -nct ${params.used_cpu} -R ${params.genome_fasta} -I ${bam_prefix}_realigned2.bam -BQSR ${bam_prefix}_recal.table -o ${bam_prefix}_realigned_recal.bam
+    """
+}
+exit 1
+}
 
 //fini
 workflow.onComplete {
