@@ -44,6 +44,7 @@ lane_id=""
 query_fastq=${1}
 lane_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 4)
 echo $lane_id
+}
 
 #----------------------------------------------#
 # helper functions for ngs pipelines
@@ -75,6 +76,5 @@ then
 else
 	echo "ERROR: No Genome build selected"
 fi
-
 }
 #----------------------------------------------#
