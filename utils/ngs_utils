@@ -3,6 +3,13 @@
 #----------------------------------------------#
 # helper functions for munging data from fastq
 #----------------------------------------------#
+# NOTE: Casava 1.8 and above
+# @HWI-D00119:50:H7AP8ADXX:2:1101:1335:2073 1:N:0:TAAGGCGA
+# 1 : HWI-D00119 the unique instrument name
+# 2 : 50 the run id
+# 3 : H7AP8ADXX the flowcell id
+# 4 : 2 flowcell lane
+
 ## 1) get machine_unit_id
 function get_machine_unit_id {
 query_fastq=""
@@ -11,6 +18,7 @@ query_fastq=${1}
 machine_unit_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 1)
 echo $machine_unit_id
 }
+
 ## 2) get run id
 function get_run_id {
 query_fastq=""
@@ -19,6 +27,7 @@ query_fastq=${1}
 run_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 2)
 echo $run_id
 }
+
 ## 3) get_flow_cell_id
 function get_flow_cell_id {
 query_fastq=""
@@ -27,6 +36,7 @@ query_fastq=${1}
 flow_cell_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 3)
 echo $flow_cell_id
 }
+
 ## 4) get_lane_id
 function get_lane_id {
 query_fastq=""
@@ -34,9 +44,11 @@ lane_id=""
 query_fastq=${1}
 lane_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 4)
 echo $lane_id
+
 #----------------------------------------------#
 # helper functions for ngs pipelines
 #----------------------------------------------#
+
 # set reference genome
 function set_reference_genome {
 ALIGNER=""
