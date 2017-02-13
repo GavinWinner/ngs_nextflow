@@ -195,7 +195,7 @@ sambamba index --nthreads=${task.cpus} ${params.bam_prefix}.dupemk.bam
 	  publishDir params.outdir,  mode: 'copy', overwrite: false
 
 	  input:
-	    file bam_to_idxstats from dupemk_bam_for_idxstats
+	    file bam_to_idxstat from dupemk_bam_for_idxstats
 
 	  output:
 	    file '*.idxstat.txt' into idxstat_file
