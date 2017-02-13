@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+#----------------------------------------------#
+# helper functions for munging data from fastq
+#----------------------------------------------#
+## 1) get machine_unit_id
+function get_machine_unit_id {
+query_fastq=""
+machine_unit_id=""
+query_fastq=${1}
+machine_unit_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 1)
+echo $machine_unit_id
+}
+## 2) get run id
+function get_run_id {
+query_fastq=""
+run_id=""
+query_fastq=${1}
+run_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 2)
+echo $run_id
+}
+## 3) get_flow_cell_id
+function get_flow_cell_id {
+query_fastq=""
+flow_cell_id=""
+query_fastq=${1}
+flow_cell_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 3)
+echo $flow_cell_id
+}
+## 4) get_lane_id
+function get_lane_id {
+query_fastq=""
+lane_id=""
+query_fastq=${1}
+lane_id=$(zcat ${query_fastq} | head -1 | sed 's/:/ /g'| cut  -c 2- | cut -d " " -f 4)
+echo $lane_id
+#----------------------------------------------#
+# helper functions for ngs pipelines
+#----------------------------------------------#
+# set reference genome
+function set_reference_genome {
+ALIGNER=""
+HUMAN_GENOMES_DIR=""
+GENOME_BUILD=""
+ALIGNER=$1
+HUMAN_GENOMES_DIR=$2
+GENOME_BUILD=$3
+if [ "${GENOME_BUILD}" == "hg19" ]; then
+	GENOME_FASTA="ucsc.hg19.fasta"
+	REFERENCE_GENOME="${HUMAN_GENOMES_DIR}/${GENOME_BUILD}/${ALIGNER}_index/${GENOME_FASTA}"
+	echo "Genome Fasta [ucsc.hg19.fasta]"
+elif [ "${GENOME_BUILD}" == "b37" ];  then
+	GENOME_FASTA="human_g1k_v37_decoy.fasta"
+	REFERENCE_GENOME="${HUMAN_GENOMES_DIR}/${GENOME_BUILD}/${ALIGNER}_index/${GENOME_FASTA}"
+	echo "Genome Fasta [human_g1k_v37_decoy.fasta]"
+else
+ 	echo "ERROR: No Genome build selected"
+fi
+}
