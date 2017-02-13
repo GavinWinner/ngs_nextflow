@@ -113,6 +113,7 @@ log.info "RG:SM              : ${params.sample_name}"
 log.info "RG:PL              : ${params.platform}"
 log.info "RG:PU              : ${params.platform_unit}"
 log.info "RG:LB              : ${params.library}"
+log.info "RG:ID              : ${params.rd_id}"
 log.info "RG:DT              : ${params.rundate}"
 log.info "bam_prefix         : ${params.bam_prefix}"
 log.info "outdir             : ${params.outdir}"
@@ -202,8 +203,6 @@ sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
 	samtools idxstats $bam_to_idxstat > ${params.bam_prefix}.dupemk.bam.idxstat.txt
 	"""
 	}
-
-
 
 //fini
 workflow.onComplete {
