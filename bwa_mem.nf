@@ -157,7 +157,7 @@ sambamba sort -t ${task.cpus} -m 8GB \
 --tmpdir=${params.outdir_tmp} \
 -o ${params.bam_prefix}.dupemk.bam /dev/stdin 2>${params.bam_prefix}.bwa_mem.err;
 #
-sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
+sambamba index --nthreads=${task.cpus} ${params.bam_prefix}.dupemk.bam
 """
 }
 
