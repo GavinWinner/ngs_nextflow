@@ -172,7 +172,6 @@ sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
 
 	  input:
 	    file bam_to_flagstat from dupemk_bam_for_flagstat
-	    file bai from bai_file
 
 	  output:
 	    file '*.flagstat.txt' into flagstat_file
@@ -194,7 +193,6 @@ sambamba index --nthreads=${task.cpus} $dupemk_bam_to_index
 
 	  input:
 	    file bam_to_idxstats from dupemk_bam_for_idxstats
-	    file bai from bai_file
 
 	  output:
 	    file '*.idxstat.txt' into idxstat_file
