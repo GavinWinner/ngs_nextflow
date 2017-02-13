@@ -106,9 +106,9 @@ fastq2 = file(params.fastq_r2)
 log.info "===================================================================="
 log.info "BWA MEM PIPELINE : Map, mark duplicates, sort and index             "
 log.info "===================================================================="
-log.info "genome             : ${params.genome_fasta}"
-log.info "R1                 : ${params.fastq_r1}"
-log.info "R2                 : ${params.fastq_r2}"
+log.info "ref genome         : ${params.genome_fasta}"
+log.info "Fastq R1           : ${params.fastq_r1}"
+log.info "Fastq R2           : ${params.fastq_r2}"
 log.info "RG:SM              : ${params.sample_name}"
 log.info "RG:PL              : ${params.platform}"
 log.info "RG:PU              : ${params.platform_unit}"
@@ -119,6 +119,7 @@ log.info "bam_prefix         : ${params.bam_prefix}"
 log.info "outdir             : ${params.outdir}"
 log.info "temp_dir           : ${params.outdir_tmp}"
 log.info "threads            : ${params.threads}"
+log.info "BWA                : ${params.bwa_args}"
 
 /*
  * Step 1.0 : bwa alignment: samblaster and sambamba
