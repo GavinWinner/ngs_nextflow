@@ -3,7 +3,7 @@
 #----------------------------------------------#
 # helper functions for munging data from fastq
 #----------------------------------------------#
-# NOTE: Casava 1.8 and above
+# WARING: Casava 1.8 and above
 # @HWI-D00119:50:H7AP8ADXX:2:1101:1335:2073 1:N:0:TAAGGCGA
 # 1 : HWI-D00119 the unique instrument name
 # 2 : 50 the run id
@@ -60,16 +60,19 @@ ALIGNER=$1
 HUMAN_GENOMES_DIR=$2
 GENOME_BUILD=$3
 
-if [[ "${GENOME_BUILD}" == "hg19" ]]; then
-GENOME_FASTA="ucsc.hg19.fasta"
-REFERENCE_GENOME="${HUMAN_GENOMES_DIR}/${GENOME_BUILD}/${ALIGNER}_index/${GENOME_FASTA}"
-echo "Genome Fasta [ucsc.hg19.fasta]"
-elif [[ "${GENOME_BUILD}" == "b37" ]];  then
+if [[ "${GENOME_BUILD}" == "hg19" ]]
+then
+	GENOME_FASTA="ucsc.hg19.fasta"
+	REFERENCE_GENOME="${HUMAN_GENOMES_DIR}/${GENOME_BUILD}/${ALIGNER}_index/${GENOME_FASTA}"
+	echo "Genome Fasta [ucsc.hg19.fasta]"
+elif [[ "${GENOME_BUILD}" == "b37" ]]
+then
 	GENOME_FASTA="human_g1k_v37_decoy.fasta"
 	REFERENCE_GENOME="${HUMAN_GENOMES_DIR}/${GENOME_BUILD}/${ALIGNER}_index/${GENOME_FASTA}"
 	echo "Genome Fasta [human_g1k_v37_decoy.fasta]"
 else
- 	echo "ERROR: No Genome build selected"
+	echo "ERROR: No Genome build selected"
 fi
+
 }
 #----------------------------------------------#
