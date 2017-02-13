@@ -196,6 +196,7 @@ sambamba index --nthreads=${task.cpus} ${params.bam_prefix}.dupemk.bam
 
 	  input:
 	    file bam_to_idxstat from dupemk_bam_for_idxstats
+      file bai from bam_index
 
 	  output:
 	    file '*.idxstat.txt' into idxstat_file
